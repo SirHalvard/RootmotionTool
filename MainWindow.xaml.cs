@@ -87,7 +87,7 @@ namespace RootmotionTool
                 graphData = frameData.Select(f => new Dictionary<string, decimal> {
                         { "X", f["X"] },
                         { "Y", f["Y"] },
-                        { "Z", f["Z"] * -1 },
+                        { "Z", f["Z"] * -1M },
                         { "Rotation", f["Rotation"] }
                     }).ToList()
             };
@@ -198,12 +198,16 @@ namespace RootmotionTool
             int listID = anibnd.Files.FindIndex(f => f.ID == OpenFile.extractedFile.File.ID);
             anibnd.Files[listID] = OpenFile.extractedFile.File;
 
-
             FileInfo bakFileInfo = new FileInfo(OpenFile.bndPath + ".bak");
             FileInfo bndFileInfo = new FileInfo(OpenFile.bndPath);
             bakFileInfo.IsReadOnly = false;
             bndFileInfo.IsReadOnly = false;
 
+            if (File.Exists(OpenFile.bndPath + ".bak"))
+            {
+                File.SetAttributes(OpenFile.bndPath + ".bak", FileAttributes.Normal);
+            }
+            
             File.Delete(OpenFile.bndPath + ".bak");
             File.Move(OpenFile.bndPath, OpenFile.bndPath + ".bak");
             anibnd.Write(OpenFile.bndPath);
